@@ -4,8 +4,11 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { AlertMessage, Place, StepEvent, StepName, StepStatus } from "@/lib/types";
 import { STEPS } from "@/lib/types";
-import { LEVEL_COLOR, fmt, ist } from "@/lib/format";
+import { LEVEL_COLOR, ZONE_KM, fmt, ist } from "@/lib/format";
 import Gauge from "./Gauge";
+import HeardFunnel from "./HeardFunnel";
+import BroadcastBox from "./BroadcastBox";
+import type { BotInfo } from "@/lib/api";
 
 const STEP_LABEL: Record<StepName, string> = {
   intake: "Intake", sentinel: "Sentinel", impact: "Impact", logistics: "Logistics", verifier: "Verifier", comms: "Comms",
@@ -18,11 +21,14 @@ type Props = {
   running: boolean;
   message: AlertMessage | null;
   error: string | null;
+  origin: { name: string; lat: number; lon: number } | null;
+  bot: BotInfo | null;
   onRun: (text: string) => void;
 };
 
-export default function IncidentPanel({ place, steps, retries, running, message, error, onRun }: Props) {
+export default function IncidentPanel({ place, steps, retries, running, message, error, origin, bot, onRun }: Props) {
   const [text, setText] = useState("");
+  const [sentKey, setSentKey] = useState(0);
 
   return (
     <>
@@ -94,19 +100,12 @@ export default function IncidentPanel({ place, steps, retries, running, message,
               <div className="hi" lang="hi">{message.hi}</div>
               <div className="en">{message.en}</div>
             </div>
+            {origin && <BroadcastBox bot={bot} message={message} place={origin} radiusKm={ZONE_KM[message.level]} onSent={() => setSentKey((k) => k + 1)} />}
           </motion.section>
         )}
       </AnimatePresence>
 
-      <section className="sec" aria-labelledby="heard-h">
-        <div className="label" id="heard-h">Heard → safe <span className="tag">starts when alerts go out on Telegram</span></div>
-        <div className="funnel">
-          <div><b>0</b><span>alerted</span></div>
-          <div><b>0</b><span>heard</span></div>
-          <div><b style={{ color: "var(--g)" }}>0</b><span>safe</span></div>
-          <div><b style={{ color: "var(--r)" }}>0</b><span>need help</span></div>
-        </div>
-      </section>
+      <HeardFunnel refreshKey={sentKey} />
     </>
   );
 }

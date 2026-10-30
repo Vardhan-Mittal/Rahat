@@ -2,15 +2,16 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, MotionConfig } from "motion/react";
-import { fetchLevels, streamPlan } from "@/lib/api";
+import { fetchBot, fetchLevels, streamPlan, type BotInfo } from "@/lib/api";
 import { ist } from "@/lib/format";
 import type { AlertMessage, Levels, MapLayers, Place, SourceHealth, StepEvent, StepName } from "@/lib/types";
 import MapView from "./MapView";
 import Watchlist from "./Watchlist";
 import IncidentPanel from "./IncidentPanel";
 import CitizenPhone from "./CitizenPhone";
+import JoinAlerts from "./JoinAlerts";
 
-const SOURCES = ["Open-Meteo", "GloFAS", "SACHET", "GDACS", "RainViewer", "OSM", "Routing"];
+const SOURCES = ["Open-Meteo", "GloFAS", "SACHET", "GDACS", "RainViewer", "OSM", "Routing", "Telegram", "Sarvam"];
 const REFRESH_MS = 5 * 60 * 1000;
 
 type Health = Record<string, Pick<SourceHealth, "state" | "note">>;
@@ -26,6 +27,8 @@ export default function CommandCentre() {
   const [retries, setRetries] = useState(0);
   const [layers, setLayers] = useState<MapLayers>({});
   const [message, setMessage] = useState<AlertMessage | null>(null);
+  const [origin, setOrigin] = useState<{ name: string; lat: number; lon: number } | null>(null);
+  const [bot, setBot] = useState<BotInfo | null>(null);
   const [running, setRunning] = useState(false);
   const [planError, setPlanError] = useState<string | null>(null);
   const [citizen, setCitizen] = useState(false);
@@ -49,6 +52,9 @@ export default function CommandCentre() {
     }
   }, []);
 
+  useEffect(() => {
+    fetchBot().then(setBot).catch(() => setBot(null));
+  }, []);
   useEffect(() => {
     load();
     const id = setInterval(load, REFRESH_MS);
@@ -79,6 +85,7 @@ export default function CommandCentre() {
     setRetries(0);
     setLayers({});
     setMessage(null);
+    setOrigin(null);
     setPlanError(null);
     setRunning(false);
   };
@@ -108,6 +115,7 @@ export default function CommandCentre() {
           break;
         case "result":
           setMessage(ev.message);
+          setOrigin({ name: ev.place.name, lat: ev.place.lat, lon: ev.place.lon });
           break;
         case "error":
           setPlanError(ev.text);
@@ -133,6 +141,7 @@ export default function CommandCentre() {
           })}
         </div>
         <div className="clock">{clock}</div>
+        <JoinAlerts bot={bot} />
         <button className="toggle" aria-pressed={citizen} onClick={() => setCitizen((c) => !c)}>Citizen view</button>
       </header>
 
@@ -161,7 +170,7 @@ export default function CommandCentre() {
       <aside className="panel right" aria-label="Incident and response plan">
         <div className="scroll">
           {place ? (
-            <IncidentPanel place={place} steps={steps} retries={retries} running={running} message={message} error={planError} onRun={run} />
+            <IncidentPanel place={place} steps={steps} retries={retries} running={running} message={message} error={planError} origin={origin} bot={bot} onRun={run} />
           ) : (
             <div className="inc-head"><span className="label">Loading live data</span><h2>Reading the sky…</h2><p>Fetching rainfall, river discharge and official alerts.</p></div>
           )}

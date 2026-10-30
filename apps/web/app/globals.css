@@ -133,6 +133,13 @@ button { cursor: pointer; }
 .funnel div { padding: 10px; border-radius: 8px; background: rgba(150, 175, 215, 0.06); }
 .funnel b { display: block; font: 500 20px var(--f-mono); }
 .funnel span { font-size: 11px; color: var(--dim); }
+.bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 10px; background: rgba(150, 175, 215, 0.12); }
+.bar i { display: block; height: 100%; width: 0; }
+.qr { position: absolute; right: 0; top: 42px; width: 252px; padding: 16px; border-radius: 14px; z-index: 30;
+  background: var(--paper); color: var(--paper-ink); box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45); text-align: center; }
+.qr img { display: block; margin: 0 auto; border-radius: 8px; }
+.qr p { margin: 10px 0 6px; font-size: 12.5px; color: var(--paper-dim); }
+.qr a { color: var(--river-deep); font-size: 13px; }
 .tag { font: 500 10px var(--f-mono); letter-spacing: 0.02em; text-transform: none; color: var(--faint); border: 1px dashed var(--line-2); padding: 2px 6px; border-radius: 4px; }
 .cta { margin-top: 10px; width: 100%; height: 38px; border-radius: 9px; border: 0; background: var(--river); color: #04172e;
   font: 700 13px var(--f-display); letter-spacing: 0.03em; }

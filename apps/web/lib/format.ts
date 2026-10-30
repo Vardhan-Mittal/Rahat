@@ -20,3 +20,6 @@ export const fmt = (v: number | null | undefined, d = 0) => (v == null || Number
 
 export const ist = (d: Date) =>
   d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" });
+
+// Must match ZONE_KM in services/api/rahat/hazards.py
+export const ZONE_KM: Record<Level, number> = { red: 3, orange: 2, yellow: 1.2, green: 0.8, unknown: 1 };
