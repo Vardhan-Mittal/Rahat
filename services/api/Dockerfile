@@ -9,7 +9,10 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-RUN mkdir -p /data
+
+# Run as a non-root user (uid 1000, as Hugging Face Spaces requires) with a writable data folder.
+RUN useradd -m -u 1000 rahat && mkdir -p /data && chown rahat /data
+USER rahat
 
 # Run exactly one instance: the Telegram bot uses long polling, and two pollers on one token conflict.
 EXPOSE 8000

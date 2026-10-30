@@ -134,8 +134,8 @@ cd services/api && .venv/Scripts/python -m pytest -q
 
 ## Deploy
 
-- **API:** `services/api/Dockerfile`. Run exactly **one** always-on instance (the bot uses long polling) with a persistent volume at `/data` for the SQLite database. Set the keys above plus `RAHAT_CORS_ORIGINS=https://<your-web-domain>`.
-- **Web:** deploy `apps/web` (for example on Vercel) with `NEXT_PUBLIC_API_URL=https://<your-api-domain>`.
+- **API:** `services/api/Dockerfile` (runs as a non-root user on port 8000). Run exactly **one** always-on instance, because the bot uses long polling. Our live instance runs on Hugging Face Spaces (Docker); any container host works. Mount a persistent volume at `/data` to keep the SQLite database across restarts. Set the keys above plus `RAHAT_CORS_ORIGINS=https://<your-web-domain>`.
+- **Web:** deploy `apps/web` as its own project (we use Vercel) with `NEXT_PUBLIC_API_URL=https://<your-api-domain>`. Serverless platforms can't host the API: the bot and the re-send loop need a process that stays running.
 
 ## Credits
 
