@@ -20,12 +20,10 @@ export default function BroadcastBox({ bot, message, place, radiusKm, onSent }: 
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // The parent remounts this box (via key) for each new alert, so local state starts fresh.
   useEffect(() => {
-    setConfirming(false);
-    setResult(null);
-    setError(null);
     fetchRecipients(place.lat, place.lon, radiusKm).then((d) => setCount(d.count)).catch(() => setCount(null));
-  }, [place.lat, place.lon, radiusKm, message]);
+  }, [place.lat, place.lon, radiusKm]);
 
   if (!bot?.enabled) {
     return <p className="hint">Zone alerts go out on Telegram. Add a bot token on the server to turn them on.</p>;

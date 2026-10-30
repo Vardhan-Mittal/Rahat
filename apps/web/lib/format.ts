@@ -19,7 +19,7 @@ export const LEVEL_HI: Record<Level, string> = {
 export const fmt = (v: number | null | undefined, d = 0) => (v == null || Number.isNaN(v) ? "–" : v.toFixed(d));
 
 export const ist = (d: Date) =>
-  d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" });
+  d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "Asia/Kolkata" });
 
 // Must match ZONE_KM in services/api/rahat/hazards.py
 export const ZONE_KM: Record<Level, number> = { red: 3, orange: 2, yellow: 1.2, green: 0.8, unknown: 1 };

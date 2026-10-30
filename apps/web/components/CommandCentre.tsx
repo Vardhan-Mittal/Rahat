@@ -33,24 +33,26 @@ export default function CommandCentre() {
   const [planError, setPlanError] = useState<string | null>(null);
   const [citizen, setCitizen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
-  const [clock, setClock] = useState("");
+  const [clock, setClock] = useState(() => `${ist(new Date())} IST`);
   const closeStream = useRef<(() => void) | null>(null);
 
   const mergeHealth = (src: Record<string, SourceHealth>) =>
     setHealth((h) => ({ ...h, ...Object.fromEntries(Object.entries(src).map(([k, v]) => [k, { state: v.state, note: v.note }])) }));
 
-  const load = useCallback(async () => {
-    try {
-      const d = await fetchLevels();
-      setLevels(d);
-      setUpdated(new Date());
-      setLevelsError(null);
-      mergeHealth(d.sources);
-      setSelected((s) => s ?? d.places[0]?.id ?? null);
-    } catch {
-      setLevelsError("Can't reach the RAHAT server. Retrying every 30 seconds.");
-    }
-  }, []);
+  const load = useCallback(
+    () =>
+      fetchLevels().then(
+        (d) => {
+          setLevels(d);
+          setUpdated(new Date());
+          setLevelsError(null);
+          mergeHealth(d.sources);
+          setSelected((s) => s ?? d.places[0]?.id ?? null);
+        },
+        () => setLevelsError("Can't reach the RAHAT server. Retrying every 30 seconds."),
+      ),
+    [],
+  );
 
   useEffect(() => {
     fetchBot().then(setBot).catch(() => setBot(null));
@@ -66,9 +68,7 @@ export default function CommandCentre() {
     return () => clearTimeout(id);
   }, [levelsError, load]);
   useEffect(() => {
-    const tick = () => setClock(`${ist(new Date())} IST`);
-    tick();
-    const id = setInterval(tick, 1000);
+    const id = setInterval(() => setClock(`${ist(new Date())} IST`), 1000);
     return () => clearInterval(id);
   }, []);
   useEffect(() => {
@@ -140,7 +140,7 @@ export default function CommandCentre() {
             return <span key={n} className="chip" data-s={s} title={h?.note}>{n}{s === "fallback" ? " · fallback" : s === "down" ? " · down" : ""}</span>;
           })}
         </div>
-        <div className="clock">{clock}</div>
+        <div className="clock" suppressHydrationWarning>{clock}</div>
         <JoinAlerts bot={bot} />
         <button className="toggle" aria-pressed={citizen} onClick={() => setCitizen((c) => !c)}>Citizen view</button>
       </header>

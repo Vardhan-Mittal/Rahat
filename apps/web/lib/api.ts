@@ -1,6 +1,6 @@
 import type { Levels, PlanEvent } from "./types";
 
-export const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+export const API = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8787";
 
 export async function fetchLevels(signal?: AbortSignal): Promise<Levels> {
   const r = await fetch(`${API}/api/levels`, { signal, cache: "no-store" });

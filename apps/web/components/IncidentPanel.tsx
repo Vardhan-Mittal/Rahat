@@ -100,7 +100,7 @@ export default function IncidentPanel({ place, steps, retries, running, message,
               <div className="hi" lang="hi">{message.hi}</div>
               <div className="en">{message.en}</div>
             </div>
-            {origin && <BroadcastBox bot={bot} message={message} place={origin} radiusKm={ZONE_KM[message.level]} onSent={() => setSentKey((k) => k + 1)} />}
+            {origin && <BroadcastBox key={message.en} bot={bot} message={message} place={origin} radiusKm={ZONE_KM[message.level]} onSent={() => setSentKey((k) => k + 1)} />}
           </motion.section>
         )}
       </AnimatePresence>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Map as MLMap, GeoJSONSource, LngLatBoundsLike } from "maplibre-gl";
+import type { Map as MLMap, GeoJSONSource, LngLatBoundsLike, MapLayerMouseEvent } from "maplibre-gl";
 import type { GdacsEvent, MapLayers, Place, SachetAlert } from "@/lib/types";
 import { LEVEL_COLOR, ist } from "@/lib/format";
 
@@ -35,13 +35,16 @@ export default function MapView({ places, sachet, gdacs, layers, focus, onSelect
   const [frame, setFrame] = useState(0);
   const [playing, setPlaying] = useState(true);
   const onSelectRef = useRef(onSelect);
-  onSelectRef.current = onSelect;
+  useEffect(() => {
+    onSelectRef.current = onSelect;
+  }, [onSelect]);
 
   // create the map once
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const maplibregl = (await import("maplibre-gl")).default;
+      const maplibregl = await import("maplibre-gl");
+      maplibregl.setWorkerUrl("/maplibre-gl-worker.mjs");
       if (cancelled || !el.current) return;
       const m = new maplibregl.Map({
         container: el.current,
@@ -86,9 +89,9 @@ export default function MapView({ places, sachet, gdacs, layers, focus, onSelect
         m.addLayer({ id: "places", type: "circle", source: "places", paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 3, 4, 8, 7], "circle-color": ["get", "c"], "circle-stroke-color": "#06101F", "circle-stroke-width": 1.5 } });
         m.addLayer({ id: "origin", type: "circle", source: "origin", paint: { "circle-radius": 7, "circle-color": "#FB923C", "circle-stroke-color": "#fff", "circle-stroke-width": 2.5 } });
 
-        m.on("click", "places", (e) => { const id = e.features?.[0]?.properties?.id; if (id) onSelectRef.current(String(id)); });
+        m.on("click", "places", (e: MapLayerMouseEvent) => { const id = e.features?.[0]?.properties?.id; if (id) onSelectRef.current(String(id)); });
         const popup = (layer: string, html: (p: Record<string, unknown>) => string) =>
-          m.on("click", layer, (e) => {
+          m.on("click", layer, (e: MapLayerMouseEvent) => {
             const p = e.features?.[0]?.properties;
             if (p) new maplibregl.Popup({ closeButton: false }).setLngLat(e.lngLat).setHTML(html(p)).addTo(m);
           });
@@ -165,7 +168,7 @@ export default function MapView({ places, sachet, gdacs, layers, focus, onSelect
     if (!ready || !m) return;
     const markers: { remove: () => void }[] = [];
     (async () => {
-      const maplibregl = (await import("maplibre-gl")).default;
+      const maplibregl = await import("maplibre-gl");
       for (const g of gdacs) {
         const dot = document.createElement("div");
         dot.className = "cyclone";

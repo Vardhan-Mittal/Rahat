@@ -10,3 +10,4 @@ __pycache__/
 *.log
 .DS_Store
 services/api/data/
+apps/web/public/maplibre-gl-worker.mjs
