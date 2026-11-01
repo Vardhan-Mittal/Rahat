@@ -6,6 +6,11 @@ Built for the **Forge Gen AI Buildathon** · Theme 2: Climate, Resource Infrastr
 
 **Team Clauder** · Vardhan Mittal, Shubham Bhatt · National Institute of Technology Delhi
 
+[![Live web app](https://img.shields.io/badge/live-command%20centre-1D7BFF)](https://rahat-pi.vercel.app)
+[![Telegram bot](https://img.shields.io/badge/Telegram-@rahatsevabot-26A5E4?logo=telegram&logoColor=white)](https://t.me/rahatsevabot)
+[![API health](https://img.shields.io/badge/API-health-22C55E)](https://rahat-t2az.onrender.com/api/health)
+[![Theme 2](https://img.shields.io/badge/Forge-Theme%202%20%C2%B7%20Climate-FB923C)](#rahat-राहत)
+
 **Try it live:** [rahat-pi.vercel.app](https://rahat-pi.vercel.app) (command centre) · [t.me/rahatsevabot](https://t.me/rahatsevabot) (Telegram bot) · [rahat-t2az.onrender.com/api/health](https://rahat-t2az.onrender.com/api/health) (API)
 
 ![RAHAT command centre: live satellite map of India with rain radar, official NDMA alert areas and a cyclone, a watchlist ranked by IMD colour level, and the reasons behind Chennai's orange level](docs/images/command-centre.jpg)
@@ -26,9 +31,16 @@ India doesn't lack forecasts. It lacks the last mile. Official warnings (IMD, ND
 
 ## See it working
 
-A Hindi SOS from central Chennai ("पानी घर में घुस गया है, 4 लोग फँसे हैं", *water has entered the house, 4 people are trapped*), run on the live system during an official IMD rain alert. RAHAT picks a school outside the danger zone on higher ground and draws a walking route that never re-enters the zone:
+A Hindi SOS from central Chennai ("पानी घर में घुस गया है, 4 लोग फँसे हैं", *water has entered the house, 4 people are trapped*), run on the live system during an official IMD rain alert. The agents tick through one by one; when Open-Meteo and a map server are busy, RAHAT switches to their backups by itself (the yellow chips). It then picks a school outside the danger zone on higher ground and draws a walking route that never re-enters the zone:
+
+![Recording of the live command centre: the Hindi SOS runs through six agents, two automatic fallbacks appear, then the map zooms into Chennai and draws the walking route to the shelter](docs/images/rahat-demo.gif)
+
+<details>
+<summary>Still image of the finished plan</summary>
 
 ![Response plan on the live map: a blue walking route from the SOS point to a school shelter outside the dashed danger zone, with nearby hospitals marked](docs/images/response-plan.jpg)
+
+</details>
 
 <table>
 <tr>
@@ -110,6 +122,15 @@ flowchart LR
 ### Live data sources (no mock data)
 
 Open-Meteo forecast, flood (GloFAS), elevation and historical archive, with MET Norway (forecast) and OpenTopoData (elevation) as automatic fallbacks · NDMA SACHET CAP alerts · GDACS · OpenStreetMap via Overpass and Nominatim · OSM foot router (routing.openstreetmap.de) and OSRM · RainViewer radar · Esri World Imagery · Sarvam AI speech · Claude. People, SOS requests and alert replies are stored only when real users act.
+
+## Limits
+
+- **RAHAT supports official alerts and 112; it doesn't replace them.** It never issues a warning of its own: levels come from fixed rules over published data and official alerts.
+- **Routes follow OpenStreetMap roads, which don't know which streets are under water right now.** The route avoids the hazard zone as a whole, not individual flooded lanes. Road-level reports from citizen photos are on the roadmap.
+- **The hazard zone is a circle sized by the level (0.8–3 km)**, not a flood-inundation model. Elevation comes from 90 m satellite data, so "higher ground" is approximate.
+- **Facilities come from OpenStreetMap.** A school is a candidate shelter, not a confirmed open relief camp, and coverage varies by town.
+- **Free-tier hosting:** saved opt-ins and replies reset when the API restarts, and public data APIs can rate-limit. That's why every source has a fallback, and missing data shows as *unknown*, never *safe*.
+- **The Telegram bot needs a smartphone.** Automated voice calls for basic phones are the next channel.
 
 ## Repository
 
