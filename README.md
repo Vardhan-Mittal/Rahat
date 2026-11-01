@@ -121,7 +121,7 @@ flowchart LR
 
 ### Live data sources (no mock data)
 
-Open-Meteo forecast, flood (GloFAS), elevation and historical archive, with MET Norway (forecast) and OpenTopoData (elevation) as automatic fallbacks · NDMA SACHET CAP alerts · GDACS · OpenStreetMap via Overpass and Nominatim · OSM foot router (routing.openstreetmap.de) and OSRM · RainViewer radar · Esri World Imagery · Sarvam AI speech · Claude. People, SOS requests and alert replies are stored only when real users act.
+Open-Meteo forecast, flood (GloFAS), elevation and historical archive, with MET Norway (forecast) and OpenTopoData (elevation) as automatic fallbacks · NDMA SACHET CAP alerts · GDACS · OpenStreetMap via Overpass and Nominatim · OSM foot router (routing.openstreetmap.de) and OSRM · RainViewer radar · Esri World Imagery · Sarvam AI speech (Saaras STT, Bulbul TTS) · Claude (optional: free-text SOS reading and translation; without a key, rule-based fallbacks run and the trace says so). People, SOS requests and alert replies are stored only when real users act.
 
 ## Limits
 
@@ -186,9 +186,13 @@ cd services/api && .venv/Scripts/python -m pytest -q
 
 ## Deploy
 
-- **API:** `services/api/Dockerfile` (runs as a non-root user on port 8000). Run exactly **one** always-on instance, because the bot uses long polling. Our live instance runs on Hugging Face Spaces (Docker); any container host works. Mount a persistent volume at `/data` to keep the SQLite database across restarts. Set the keys above plus `RAHAT_CORS_ORIGINS=https://<your-web-domain>`.
+- **API:** `services/api/Dockerfile` (runs as a non-root user on port 8000). Run exactly **one** always-on instance, because the bot uses long polling. Our live instance runs on Render (Docker, free tier, kept awake by an uptime ping); any container host works. Mount a persistent volume at `/data` to keep the SQLite database across restarts. Set the keys above plus `RAHAT_CORS_ORIGINS=https://<your-web-domain>`.
 - **Web:** deploy `apps/web` as its own project (we use Vercel) with `NEXT_PUBLIC_API_URL=https://<your-api-domain>`. Serverless platforms can't host the API: the bot and the re-send loop need a process that stays running.
 
 ## Credits
 
 Map imagery and labels © Esri, Maxar, Earthstar Geographics · Radar © RainViewer · Map data © OpenStreetMap contributors (ODbL) · Weather and flood data © Open-Meteo (CC BY 4.0), GloFAS / Copernicus · Alerts © NDMA SACHET, GDACS. RAHAT supports, and never replaces, official instructions. In an emergency, call **112**.
+
+## License
+
+[MIT](LICENSE) © 2026 Team Clauder (Vardhan Mittal, Shubham Bhatt)
