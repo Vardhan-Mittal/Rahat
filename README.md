@@ -2,7 +2,11 @@
 
 **From alert to "I'm safe".** RAHAT turns live flood, heat and cyclone data into a plan for one person: where to go, which road is safe, in their own language, by voice. Then it checks that people in the danger zone actually heard the alert, and sends help to those who didn't make it out.
 
-Built for the **Forge Gen AI Buildathon** · Theme 2: Climate, Resource Infrastructure & Global Supply Resilience · *Autonomous Emergency Response & Logistics Swarm* · Team Clauder
+Built for the **Forge Gen AI Buildathon** · Theme 2: Climate, Resource Infrastructure & Global Supply Resilience · *Autonomous Emergency Response & Logistics Swarm*
+
+**Team Clauder** · Vardhan Mittal, Shubham Bhatt · National Institute of Technology Delhi
+
+**Try it live:** [rahat-pi.vercel.app](https://rahat-pi.vercel.app) (command centre) · [t.me/rahatsevabot](https://t.me/rahatsevabot) (Telegram bot) · [rahat-t2az.onrender.com/api/health](https://rahat-t2az.onrender.com/api/health) (API)
 
 ---
 
