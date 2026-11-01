@@ -16,7 +16,7 @@ def _rule(level: str, text: str, why: str, source: str, kind: str = "official", 
     return {"level": level, "text": text, "why": why, "source": source, "kind": kind, "value": value}
 
 
-def rain_rule(rain24: float) -> dict:
+def rain_rule(rain24: float, source: str = "Open-Meteo") -> dict:
     # IMD 24-hour rainfall categories: heavy 64.5, very heavy 115.6, extremely heavy 204.5 mm.
     if rain24 >= 204.5:
         lv, why = "red", "≥ 204.5 mm · IMD extremely heavy rainfall"
@@ -26,10 +26,10 @@ def rain_rule(rain24: float) -> dict:
         lv, why = "yellow", "≥ 64.5 mm · IMD heavy rainfall"
     else:
         lv, why = "green", "below IMD heavy-rain threshold (64.5 mm)"
-    return _rule(lv, f"Rain next 24 h: {rain24:.1f} mm", why, "Open-Meteo", "rain", round(rain24, 1))
+    return _rule(lv, f"Rain next 24 h: {rain24:.1f} mm", why, source, "rain", round(rain24, 1))
 
 
-def heat_rule(tmax: float, normal: float | None = None) -> dict:
+def heat_rule(tmax: float, normal: float | None = None, source: str = "Open-Meteo") -> dict:
     """IMD plains criteria when a 30-year normal is known; absolute thresholds otherwise."""
     if normal is not None:
         dep = tmax - normal
@@ -41,7 +41,7 @@ def heat_rule(tmax: float, normal: float | None = None) -> dict:
             lv, why = "yellow", f"hot: +{dep:.1f} °C above normal {normal:.1f} °C"
         else:
             lv, why = "green", f"within heat criteria (normal {normal:.1f} °C)"
-        return _rule(lv, f"Max temperature, 3 days: {tmax:.1f} °C", why, "Open-Meteo + archive", "heat", round(tmax, 1))
+        return _rule(lv, f"Max temperature, 3 days: {tmax:.1f} °C", why, f"{source} + archive", "heat", round(tmax, 1))
     if tmax >= 47:
         lv, why = "red", "≥ 47 °C · severe heatwave (absolute)"
     elif tmax >= 45:
@@ -50,7 +50,7 @@ def heat_rule(tmax: float, normal: float | None = None) -> dict:
         lv, why = "yellow", "≥ 40 °C · watch for heatwave"
     else:
         lv, why = "green", "below heat thresholds"
-    return _rule(lv, f"Max temperature, 3 days: {tmax:.1f} °C", why, "Open-Meteo", "heat", round(tmax, 1))
+    return _rule(lv, f"Max temperature, 3 days: {tmax:.1f} °C", why, source, "heat", round(tmax, 1))
 
 
 def river_rule(peak: float | None, median: float | None, river: str | None = None) -> dict:

@@ -41,9 +41,9 @@ async def levels(max_age: float = 300) -> dict:
         f = fc[i] if isinstance(fc, list) else None
         q = fl[i] if isinstance(fl, list) else None
         if f:
-            rules.append(hazards.rain_rule(f["rain24"]))
+            rules.append(hazards.rain_rule(f["rain24"], f["source"]))
             if f["tmax3"] is not None:
-                rules.append(hazards.heat_rule(f["tmax3"]))
+                rules.append(hazards.heat_rule(f["tmax3"], source=f["source"]))
         if q:
             rules.append(hazards.river_rule(q["peak3"], q["median"], p.get("river")))
         rules += hazards.official_rules(p["lat"], p["lon"], alerts.covering(sa_list, p["lat"], p["lon"]), gd_list)

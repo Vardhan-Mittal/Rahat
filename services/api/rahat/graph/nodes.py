@@ -99,10 +99,10 @@ async def sentinel(state: PlanState) -> PlanState:
         rules, used, missing = [], [], []
         if isinstance(fc, list):
             f = fc[0]
-            rules.append(hazards.rain_rule(f["rain24"]))
+            rules.append(hazards.rain_rule(f["rain24"], f["source"]))
             if f["tmax3"] is not None:
-                rules.append(hazards.heat_rule(f["tmax3"], normal if isinstance(normal, (int, float)) else None))
-            used.append("Open-Meteo")
+                rules.append(hazards.heat_rule(f["tmax3"], normal if isinstance(normal, (int, float)) else None, f["source"]))
+            used.append(f["source"] if f["source"] == "Open-Meteo" else f"!Open-Meteo busy → {f['source']}")
             if isinstance(normal, (int, float)):
                 used.append("1991-2020 normal")
         else:
@@ -118,10 +118,10 @@ async def sentinel(state: PlanState) -> PlanState:
         missing += [s for s, v in (("SACHET", sa), ("GDACS", gd)) if not isinstance(v, list)]
 
         # Missing forecast data makes the level unknown, never safe.
-        a = hazards.combine(rules) if "Open-Meteo" in used else {"level": "unknown", "rules": rules, "driver": None}
+        a = hazards.combine(rules) if isinstance(fc, list) else {"level": "unknown", "rules": rules, "driver": None}
     zone = hazards.ZONE_KM[a["level"]]
     driver = a["driver"]["text"] if a["driver"] else "Forecast unavailable"
-    status = "ok" if not missing else "fix"
+    status = "ok" if not missing and not any(u.startswith("!") for u in used) else "fix"
     _emit("sentinel", status,
           f"Level <b data-level=\"{a['level']}\">{a['level'].upper()}</b>. {html.escape(driver)}. Zone radius {zone:g} km by rule.",
           used + [f"!{m} down" for m in missing], t.ms)
